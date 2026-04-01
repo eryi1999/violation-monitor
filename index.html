@@ -84,8 +84,8 @@
             border-left: 5px solid #e4393b;
         }
 
-        .stat-card.pdd {
-            border-left: 5px solid #e02e24;
+        .stat-card.total {
+            border-left: 5px solid #1a5f4a;
         }
 
         .stat-title {
@@ -165,12 +165,17 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 14px;
         }
 
         .filter-btn.active {
             background: #20b2aa;
             color: white;
             border-color: #20b2aa;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: #f5f5f5;
         }
 
         /* 数据表格 */
@@ -201,6 +206,7 @@
         .product-link {
             color: #20b2aa;
             text-decoration: none;
+            font-weight: 500;
         }
 
         .product-link:hover {
@@ -241,8 +247,22 @@
             background: #e4393b;
         }
 
-        .platform-pdd {
-            background: #e02e24;
+        .remark-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .remark-low-price {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .remark-split-sale {
+            background: #fff3e0;
+            color: #e65100;
         }
 
         /* 底部操作区 */
@@ -325,7 +345,7 @@
                 <h1>🔍 英诺特 - 电商平台违价监控工作台</h1>
             </div>
             <div class="date-badge" id="currentDate">
-                📅 2026-03-30
+                📅 加载中...
             </div>
         </div>
 
@@ -354,7 +374,7 @@
             </div>
 
             <!-- 汇总统计 -->
-            <div class="stat-card" style="border-left: 5px solid #1a5f4a;">
+            <div class="stat-card total">
                 <div class="stat-title">累计发现违价商品</div>
                 <div class="stat-value" id="total-count">--<span class="stat-unit">个</span></div>
                 <div class="stat-trend trend-down" id="total-processed">加载中...</div>
@@ -370,10 +390,9 @@
             <div class="section-header">
                 <h2 class="section-title">📊 违价商品明细</h2>
                 <div class="filter-group">
-                    <button class="filter-btn active">全部</button>
-                    <button class="filter-btn">淘宝</button>
-                    <button class="filter-btn">京东</button>
-                    <button class="filter-btn">拼多多</button>
+                    <button class="filter-btn active" data-platform="all">全部</button>
+                    <button class="filter-btn" data-platform="taobao">淘宝</button>
+                    <button class="filter-btn" data-platform="jd">京东</button>
                 </div>
             </div>
 
@@ -387,30 +406,11 @@
                         <th>正常价</th>
                         <th>发现时间</th>
                         <th>状态</th>
-                        <th>操作</th>
+                        <th>备注</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="platform-badge platform-taobao">淘宝</span></td>
-                        <td><a href="#" class="product-link">英诺特甲乙肺三合一检测试剂</a></td>
-                        <td>爱康四海大药房</td>
-                        <td><span class="price-tag price-violation">¥28.5</span></td>
-                        <td>¥88.0</td>
-                        <td>2026-03-29 14:23</td>
-                        <td>待处理</td>
-                        <td><button class="filter-btn">下架申请</button></td>
-                    </tr>
-                    <tr>
-                        <td><span class="platform-badge platform-taobao">淘宝</span></td>
-                        <td><a href="#" class="product-link">英诺特甲乙肺三合一检测试剂</a></td>
-                        <td>英诺特旗舰店</td>
-                        <td><span class="price-tag price-violation">¥29.9</span></td>
-                        <td>¥88.0</td>
-                        <td>2026-03-29 15:47</td>
-                        <td>待处理</td>
-                        <td><button class="filter-btn">下架申请</button></td>
-                    </tr>
+                <tbody id="violations-tbody">
+                    <!-- 数据将通过 JavaScript 动态加载 -->
                 </tbody>
             </table>
 
@@ -427,247 +427,473 @@
 
         <!-- 底部操作区 -->
         <div class="action-bar">
-            <div class="last-update">
-                最后更新：2026-03-30 16:45 | 下次自动采集：2026-03-30 20:00
+            <div class="last-update" id="last-update">
+                最后更新：加载中...
             </div>
-            <button class="download-btn" onclick="alert('报表下载功能演示')">
-                 下载 Excel 报表
+            <button class="download-btn" onclick="downloadReport()">
+                📥 下载 Excel 报表
             </button>
         </div>
     </div>
 
-    <script>
-        // 配置项
-        const CONFIG = {
-            DATA_FILE: null,  // 使用内嵌数据，不需要外部文件
-            AUTO_REFRESH: false,                // 是否自动刷新（可选）
-            REFRESH_INTERVAL: 300000            // 刷新间隔（毫秒），默认 5 分钟
-        };
-
-        // 内嵌违价监控数据（2026-03-30 更新）
-        const EMBEDDED_DATA = {
-  "update_time": "2026-03-30 22:30:00",
-  "next_collection_time": "2026-03-31 09:00",
-  "summary": {
-    "taobao": {
-      "violation_count": 11,
-      "trend": "up",
-      "trend_text": "新增 11 个"
-    },
-    "jd": {
-      "violation_count": 2,
-      "trend": "stable",
-      "trend_text": "较昨日持平"
-    },
-    "pdd": {
-      "violation_count": null,
-      "trend": "stable",
-      "trend_text": "暂未采集"
-    },
-    "total_violations": 13,
-    "processed_count": 0
-  },
-  "violations": [
-    {
-      "platform": "taobao",
-      "title": "英诺特甲乙肺三合一检测试剂",
-      "shop_name": "爱康四海大药房",
-      "violation_price": 28.5,
-      "normal_price": 88.0,
-      "product_url": "https://item.taobao.com/item.htm?id=864048013322",
-      "found_time": "2026-03-29 14:23",
-      "status": "pending"
-    },
-    {
-      "platform": "taobao",
-      "title": "英诺特甲乙肺三合一检测试剂",
-      "shop_name": "英诺特旗舰店",
-      "violation_price": 29.9,
-      "normal_price": 88.0,
-      "product_url": "https://item.taobao.com/item.htm?id=864048013322",
-      "found_time": "2026-03-29 15:47",
-      "status": "pending"
-    }
-  ]
-};
-
-        // 工具函数：格式化数字
-        function formatNumber(num) {
-            if (num === null || num === undefined) return '--';
-            return num.toString();
-        }
-
-        // 工具函数：获取趋势样式
-        function getTrendClass(trend) {
-            const trendMap = {
-                'up': 'trend-up',
-                'down': 'trend-down',
-                'stable': 'trend-stable'
+        <!-- 第二部分：JavaScript 逻辑 -->
+        <script>
+            // 配置项
+            const CONFIG = {
+                DATA_FILE: 'violation_data.json',
+                AUTO_REFRESH: true,
+                REFRESH_INTERVAL: 300000,  // 5 分钟
+                TAobao_SEARCH_URL: 'https://s.taobao.com/search?q=英诺特甲乙肺三合一检测试剂',
+                JD_SEARCH_URL: 'https://search.jd.com/Search?keyword=英诺特甲乙肺三合一检测试剂'
             };
-            return trendMap[trend] || 'trend-stable';
-        }
 
-        // 工具函数：生成平台徽章 HTML
-        function createPlatformBadge(platform) {
-            const platformClasses = {
-                'taobao': 'platform-taobao',
-                'jd': 'platform-jd',
-                'pdd': 'platform-pdd'
+            // 内嵌数据（当外部文件加载失败时使用）
+            const EMBEDDED_DATA = {
+                "update_time": "2026-04-01 17:10:00",
+                "next_collection_time": "2026-04-02 09:00",
+                "summary": {
+                                "taobao": {
+                                                "violation_count": 11,
+                                                "trend": "stable",
+                                                "trend_text": "较昨日持平"
+                                },
+                                "jd": {
+                                                "violation_count": 3,
+                                                "trend": "up",
+                                                "trend_text": "新增 1 个"
+                                },
+                                "total_violations": 14,
+                                "processed_count": 0
+                },
+                "violations": [
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲流乙流肺炎支原体抗原检测盒呼吸道三联试纸居家自测",
+                                                "shop_name": "天猫超市",
+                                                "violation_price": 20.9,
+                                                "normal_price": null,
+                                                "product_url": "https://detail.tmall.com/item.htm?id=777782814501",
+                                                "found_time": "2026-03-30 22:10",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲流乙流支原体三合一试剂盒流感三联咽拭子抗原检测试剂盒",
+                                                "shop_name": "仕达医疗器械专营店",
+                                                "violation_price": 17.5,
+                                                "normal_price": null,
+                                                "product_url": "https://detail.tmall.com/item.htm?id=760837452226",
+                                                "found_time": "2026-03-30 22:10",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲流乙流肺支原体三合一检测试剂盒流感抗原测试纸官方正品",
+                                                "shop_name": "英诺特旗舰店",
+                                                "violation_price": 15.3,
+                                                "normal_price": null,
+                                                "product_url": "https://detail.tmall.com/item.htm?id=805496239702",
+                                                "found_time": "2026-03-30 22:10",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲乙流肺支原体三合一试剂盒流感检测肺炎试剂盒甲流测试纸",
+                                                "shop_name": "仁皿医疗器械专营店",
+                                                "violation_price": 22.7,
+                                                "normal_price": null,
+                                                "product_url": "https://detail.tmall.com/item.htm?id=963811942852",
+                                                "found_time": "2026-03-30 22:10",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲流乙流支原体三合一试剂盒流感肺炎支原体自测试剂盒",
+                                                "shop_name": "九安医疗器械专营店",
+                                                "violation_price": 19.5,
+                                                "normal_price": null,
+                                                "product_url": "https://detail.tmall.com/item.htm?id=889778577423",
+                                                "found_time": "2026-03-30 22:15",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "甲乙流支原体腺病毒合胞病毒流感检测试剂盒试纸三合一英诺特自测",
+                                                "shop_name": "康泰医疗经销站",
+                                                "violation_price": 29,
+                                                "normal_price": null,
+                                                "product_url": "https://item.taobao.com/item.htm?id=1002487491159",
+                                                "found_time": "2026-03-30 22:15",
+                                                "status": "pending",
+                                                "remark": "-"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲乙流肺炎支原体抗原检测试剂盒流感检测家用自测",
+                                                "shop_name": "爱凯医疗器械专营店",
+                                                "violation_price": 28.1,
+                                                "normal_price": null,
+                                                "product_url": "https://detail.tmall.com/item.htm?id=670676328605",
+                                                "found_time": "2026-03-30 22:15",
+                                                "status": "pending",
+                                                "remark": "-"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲乙型流感新型冠抗原检测试纸甲乙流肺炎居家三合一试剂盒",
+                                                "shop_name": "玳珂健康医疗器械企业店",
+                                                "violation_price": 9.1,
+                                                "normal_price": null,
+                                                "product_url": "https://item.taobao.com/item.htm?id=1004207310991",
+                                                "found_time": "2026-03-30 22:25",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特呼吸道三联检测盒肺炎支原体甲流乙流三合一试纸咽拭子",
+                                                "shop_name": "康达九州医疗企业店",
+                                                "violation_price": 29,
+                                                "normal_price": null,
+                                                "product_url": "https://item.taobao.com/item.htm?id=870209689124",
+                                                "found_time": "2026-03-30 22:25",
+                                                "status": "pending",
+                                                "remark": "-"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲流乙流肺炎支原体抗原检测试剂盒三合一呼吸道肺炎自测",
+                                                "shop_name": "云树医疗",
+                                                "violation_price": 26,
+                                                "normal_price": null,
+                                                "product_url": "https://item.taobao.com/item.htm?id=990103563834",
+                                                "found_time": "2026-03-30 22:25",
+                                                "status": "pending",
+                                                "remark": "-"
+                                },
+                                {
+                                                "platform": "taobao",
+                                                "title": "英诺特甲乙流支原体试剂盒流感肺炎三合一抗原咽拭子自测检测试纸",
+                                                "shop_name": "优彩医疗器械专营店",
+                                                "violation_price": 26,
+                                                "normal_price": null,
+                                                "product_url": "https://item.taobao.com/item.htm?id=925758130341",
+                                                "found_time": "2026-03-30 22:25",
+                                                "status": "pending",
+                                                "remark": "-"
+                                },
+                                {
+                                                "platform": "jd",
+                                                "title": "英诺特【可选顺丰】甲流乙流支原体试剂盒三合一 呼吸道三联检测 1 人份（甲乙流 + 支原体）",
+                                                "shop_name": "半洲生物医疗器械专营店",
+                                                "violation_price": 17.5,
+                                                "normal_price": 21.5,
+                                                "product_url": "https://item.jd.com/10108415298699.html",
+                                                "found_time": "2026-03-30 21:25",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                },
+                                {
+                                                "platform": "jd",
+                                                "title": "英诺特甲流乙流感支原体检测试剂盒三合一测试盒甲乙流感试纸【1 人份】",
+                                                "shop_name": "常光医疗保健专营店",
+                                                "violation_price": 28.5,
+                                                "normal_price": null,
+                                                "product_url": "https://item.jd.com/10193758294854.html",
+                                                "found_time": "2026-03-30 21:28",
+                                                "status": "pending",
+                                                "remark": "-"
+                                },
+                                {
+                                                "platform": "jd",
+                                                "title": "甲乙流支原体三合一检测试剂盒",
+                                                "shop_name": "凡几医疗器械专营店",
+                                                "violation_price": 22.0,
+                                                "normal_price": null,
+                                                "product_url": "https://search.jd.com/Search?keyword=英诺特甲乙肺检测试剂",
+                                                "found_time": "2026-04-01 17:10",
+                                                "status": "pending",
+                                                "remark": "低价销售"
+                                }
+                ]
+}
             };
-            const platformNames = {
-                'taobao': '淘宝',
-                'jd': '京东',
-                'pdd': '拼多多'
-            };
-            return `<span class="platform-badge ${platformClasses[platform] || ''}">${platformNames[platform] || platform}</span>`;
-        }
 
-        // 工具函数：生成价格标签 HTML
-        function createPriceTag(price, isViolation) {
-            const priceClass = isViolation ? 'price-violation' : 'price-normal';
-            return `<span class="price-tag ${priceClass}">¥${price.toFixed(1)}</span>`;
-        }
-
-        // 工具函数：生成状态标签
-        function createStatusTag(status) {
-            const statusMap = {
-                'pending': '待处理',
-                'processing': '处理中',
-                'completed': '已下架',
-                'ignored': '已忽略'
-            };
-            return statusMap[status] || status;
-        }
-
-        // 核心功能：加载并渲染数据（使用内嵌数据）
-        function loadDashboardData() {
-            try {
-                // 使用内嵌数据，不需要 fetch
-                const data = EMBEDDED_DATA;
-                
-                // 更新统计卡片
-                updateStatsCards(data.summary);
-                
-                // 更新违价商品明细表格
-                updateViolationsTable(data.violations);
-                
-                // 更新时间信息
-                updateTimeInfo(data.update_time, data.next_collection_time);
-                
-                console.log('✅ 数据加载成功:', data);
-                
-            } catch (error) {
-                console.error('❌ 数据加载失败:', error);
-                showLoadError();
+            // 工具函数：格式化数字
+            function formatNumber(num) {
+                if (num === null || num === undefined) return '--';
+                return num.toString();
             }
-        }
 
-        // 更新统计卡片
-        function updateStatsCards(summary) {
-            // 淘宝
-            document.querySelector('.stat-card.taobao .stat-value').innerHTML = 
-                `${formatNumber(summary.taobao.violation_count)}<span class="stat-unit">个</span>`;
-            document.querySelector('.stat-card.taobao .stat-trend').textContent = summary.taobao.trend_text;
-            document.querySelector('.stat-card.taobao .stat-trend').className = 
-                `stat-trend ${getTrendClass(summary.taobao.trend)}`;
-            
-            // 京东
-            document.querySelector('.stat-card.jd .stat-value').innerHTML = 
-                `${formatNumber(summary.jd.violation_count)}<span class="stat-unit">个</span>`;
-            document.querySelector('.stat-card.jd .stat-trend').textContent = summary.jd.trend_text;
-            document.querySelector('.stat-card.jd .stat-trend').className = 
-                `stat-trend ${getTrendClass(summary.jd.trend)}`;
-            
-            // 拼多多
-            document.querySelector('.stat-card.pdd .stat-value').innerHTML = 
-                `${formatNumber(summary.pdd.violation_count)}<span class="stat-unit">个</span>`;
-            document.querySelector('.stat-card.pdd .stat-trend').textContent = summary.pdd.trend_text;
-            
-            // 汇总
-            document.querySelector('.stat-card:last-child .stat-value').innerHTML = 
-                `${formatNumber(summary.total_violations)}<span class="stat-unit">个</span>`;
-            document.querySelector('.stat-card:last-child .stat-trend').textContent = 
-                `已处理 ${summary.processed_count} 个`;
-        }
-
-        // 更新违价商品表格
-        function updateViolationsTable(violations) {
-            const tbody = document.querySelector('.data-table tbody');
-            
-            if (!violations || violations.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; color: #999; padding: 40px;">
-                            🎉 暂无违价商品数据
-                        </td>
-                    </tr>
-                `;
-                return;
+            // 工具函数：获取趋势样式
+            function getTrendClass(trend) {
+                const trendMap = {
+                    'up': 'trend-up',
+                    'down': 'trend-down',
+                    'stable': 'trend-stable'
+                };
+                return trendMap[trend] || 'trend-stable';
             }
-            
-            tbody.innerHTML = violations.map(item => `
-                <tr>
-                    <td>${createPlatformBadge(item.platform)}</td>
-                    <td><a href="${item.product_url || '#'}" class="product-link" target="_blank">${item.title}</a></td>
-                    <td>${item.shop_name}</td>
-                    <td>${createPriceTag(item.violation_price, true)}</td>
-                    <td>${createPriceTag(item.normal_price, false)}</td>
-                    <td>${item.found_time}</td>
-                    <td>${createStatusTag(item.status)}</td>
-                    <td><button class="filter-btn" onclick="alert('下架申请功能开发中...')">下架申请</button></td>
-                </tr>
-            `).join('');
-        }
 
-        // 更新时间信息
-        function updateTimeInfo(updateTime, nextCollectionTime) {
-            const now = new Date();
-            const dateStr = now.getFullYear() + '-' + 
-                           String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                           String(now.getDate()).padStart(2, '0');
-            
-            document.getElementById('currentDate').textContent = '📅 ' + dateStr;
-            
-            const actionBar = document.querySelector('.action-bar .last-update');
-            if (actionBar) {
-                actionBar.textContent = `最后更新：${updateTime || '未知'} | 下次自动采集：${nextCollectionTime || '未设置'}`;
+            // 工具函数：生成平台徽章 HTML
+            function createPlatformBadge(platform) {
+                const platformClasses = {
+                    'taobao': 'platform-taobao',
+                    'jd': 'platform-jd'
+                };
+                const platformNames = {
+                    'taobao': '淘宝',
+                    'jd': '京东'
+                };
+                return `<span class="platform-badge ${platformClasses[platform] || ''}">${platformNames[platform] || platform}</span>`;
             }
-        }
 
-        // 显示加载错误
-        function showLoadError() {
-            const statsGrid = document.querySelector('.stats-grid');
-            if (statsGrid) {
-                statsGrid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #fff3cd; border-radius: 12px; color: #856404;">
-                        ⚠️ 数据文件加载失败，请确保 violation_data.json 文件与 HTML 文件在同一目录下<br>
-                        <small>错误详情：无法读取数据文件，可能是文件不存在或格式错误</small>
-                    </div>
-                `;
+            // 工具函数：生成价格标签 HTML
+            function createPriceTag(price, isViolation) {
+                const priceClass = isViolation ? 'price-violation' : 'price-normal';
+                return `<span class="price-tag ${priceClass}">¥${price.toFixed(1)}</span>`;
             }
-        }
 
-        // 页面加载完成后自动加载数据
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 工作台初始化...');
-            loadDashboardData();
-            
-            // 可选：定时自动刷新
-            if (CONFIG.AUTO_REFRESH) {
-                setInterval(loadDashboardData, CONFIG.REFRESH_INTERVAL);
-                console.log(`⏰ 已启用自动刷新，间隔：${CONFIG.REFRESH_INTERVAL / 1000}秒`);
+            // 工具函数：生成状态标签
+            function createStatusTag(status) {
+                const statusMap = {
+                    'pending': '待处理',
+                    'processing': '处理中',
+                    'completed': '已下架',
+                    'ignored': '已忽略'
+                };
+                return statusMap[status] || status;
             }
-        });
 
-        // 简单的交互效果
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (!this.parentElement.classList.contains('filter-group')) {
-                    this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
+            // 工具函数：生成备注标签
+            function createRemarkTag(remark) {
+                if (!remark) return '<span style="color: #999;">-</span>';
+                const remarkClass = remark.includes('拆零') ? 'price-violation' : 'price-normal';
+                return `<span class="price-tag ${remarkClass}">${remark}</span>`;
+            }
+
+            // 核心功能：加载并渲染数据
+            async function loadDashboardData() {
+                try {
+                    let data;
+                    
+                    // 尝试加载外部数据文件
+                    try {
+                        const response = await fetch(CONFIG.DATA_FILE);
+                        if (!response.ok) {
+                            throw new Error('HTTP error! status: ' + response.status);
+                        }
+                        data = await response.json();
+                        console.log('✅ 外部数据加载成功:', data);
+                    } catch (fetchError) {
+                        console.warn('⚠️ 外部数据加载失败，使用内嵌数据:', fetchError);
+                        data = EMBEDDED_DATA;
+                    }
+                    
+                    // 更新统计卡片
+                    updateStatsCards(data.summary);
+                    
+                    // 更新违价商品明细表格
+                    updateViolationsTable(data.violations);
+                    
+                    // 更新时间信息
+                    updateTimeInfo(data.update_time, data.next_collection_time);
+                    
+                    // 隐藏错误提示（如果有）
+                    const errorDiv = document.getElementById('load-error');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                    }
+                    
+                    console.log('✅ 数据加载成功');
+                    
+                } catch (error) {
+                    console.error('❌ 数据加载失败:', error);
+                    showLoadError();
+                }
+            }
+
+            // 更新统计卡片
+            function updateStatsCards(summary) {
+                // 淘宝
+                const taobaoCount = document.getElementById('taobao-count');
+                if (taobaoCount) {
+                    taobaoCount.innerHTML = `${formatNumber(summary.taobao.violation_count)}<span class="stat-unit">个</span>`;
+                }
+                const taobaoTrend = document.getElementById('taobao-trend');
+                if (taobaoTrend) {
+                    taobaoTrend.textContent = summary.taobao.trend_text;
+                    taobaoTrend.className = `stat-trend ${getTrendClass(summary.taobao.trend)}`;
+                }
+                
+                // 京东
+                const jdCount = document.getElementById('jd-count');
+                if (jdCount) {
+                    jdCount.innerHTML = `${formatNumber(summary.jd.violation_count)}<span class="stat-unit">个</span>`;
+                }
+                const jdTrend = document.getElementById('jd-trend');
+                if (jdTrend) {
+                    jdTrend.textContent = summary.jd.trend_text;
+                    jdTrend.className = `stat-trend ${getTrendClass(summary.jd.trend)}`;
+                }
+                
+                // 汇总
+                const totalCount = document.getElementById('total-count');
+                if (totalCount) {
+                    totalCount.innerHTML = `${formatNumber(summary.total_violations)}<span class="stat-unit">个</span>`;
+                }
+                const totalProcessed = document.getElementById('total-processed');
+                if (totalProcessed) {
+                    totalProcessed.textContent = `累计发现 ${summary.total_violations} 个`;
+                }
+            }
+
+            // 更新违价商品表格
+            function updateViolationsTable(violations) {
+                const tbody = document.querySelector('.data-table tbody');
+                
+                if (!violations || violations.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                                🎉 暂无违价商品数据
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                violations.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${createPlatformBadge(item.platform)}</td>
+                            <td><a href="${item.product_url || '#'}" target="_blank" class="product-link">${item.title}</a></td>
+                            <td>${item.shop_name || '-'}</td>
+                            <td>${createPriceTag(item.violation_price, true)}</td>
+                            <td>${item.normal_price ? '¥' + item.normal_price.toFixed(1) : '-'}</td>
+                            <td>${item.found_time || '-'}</td>
+                            <td>${createStatusTag(item.status)}</td>
+                            <td>${createRemarkTag(item.remark)}</td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html;
+            }
+
+            // 更新时间信息
+            function updateTimeInfo(updateTime, nextCollectionTime) {
+                const lastUpdateEl = document.querySelector('.last-update');
+                if (lastUpdateEl && updateTime) {
+                    lastUpdateEl.textContent = `最后更新：${updateTime} | 下次自动采集：${nextCollectionTime || '未设置'}`;
+                }
+            }
+
+            // 显示加载错误
+            function showLoadError() {
+                // 不再显示错误提示，直接使用内嵌数据
+                console.log('ℹ️ 使用内嵌数据显示');
+            }
+
+            // 下载 Excel 报表
+            function downloadExcelReport() {
+                try {
+                    // 从内嵌数据或已加载的数据生成 Excel
+                    const data = window.currentData || EMBEDDED_DATA;
+                    
+                    // 创建 CSV 内容（简化版本，实际可用 SheetJS 库）
+                    let csvContent = '\uFEFF'; // BOM for UTF-8
+                    csvContent += '平台，商品名称，店铺名称，违价，正常价，发现时间，状态，备注\n';
+                    
+                    data.violations.forEach(item => {
+                        const row = [
+                            item.platform === 'taobao' ? '淘宝' : '京东',
+                            `"${item.title}"`,
+                            `"${item.shop_name || '-'}"`,
+                            item.violation_price,
+                            item.normal_price || '-',
+                            item.found_time || '-',
+                            item.status || 'pending',
+                            item.remark || '-'
+                        ].join(',');
+                        csvContent += row + '\n';
+                    });
+                    
+                    // 创建下载链接
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `违价监控报表_${new Date().toISOString().split('T')[0]}.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    console.log('✅ 报表下载成功');
+                } catch (error) {
+                    console.error('❌ 报表下载失败:', error);
+                    alert('报表下载失败，请稍后重试');
+                }
+            }
+
+            // 跳转到淘宝搜索
+            function jumpToTaobao() {
+                window.open(CONFIG.TAobao_SEARCH_URL, '_blank');
+            }
+
+            // 跳转到京东搜索
+            function jumpToJD() {
+                window.open(CONFIG.JD_SEARCH_URL, '_blank');
+            }
+
+            // 初始化
+            document.addEventListener('DOMContentLoaded', function() {
+                // 设置当前日期
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('zh-CN', { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit' 
+                });
+                document.getElementById('currentDate').textContent = '📅 ' + dateStr;
+                
+                // 绑定下载按钮事件
+                const downloadBtn = document.querySelector('.download-btn');
+                if (downloadBtn) {
+                    downloadBtn.onclick = downloadExcelReport;
+                }
+                
+                // 绑定平台卡片点击事件（可选）
+                const taobaoCard = document.querySelector('.stat-card.taobao');
+                const jdCard = document.querySelector('.stat-card.jd');
+                
+                if (taobaoCard) {
+                    taobaoCard.style.cursor = 'pointer';
+                    taobaoCard.title = '点击跳转到淘宝搜索';
+                    taobaoCard.onclick = jumpToTaobao;
+                }
+                
+                if (jdCard) {
+                    jdCard.style.cursor = 'pointer';
+                    jdCard.title = '点击跳转到京东搜索';
+                    jdCard.onclick = jumpToJD;
+                }
+                
+                // 加载数据
+                loadDashboardData();
+                
+                // 自动刷新（如果启用）
+                if (CONFIG.AUTO_REFRESH) {
+                    setInterval(loadDashboardData, CONFIG.REFRESH_INTERVAL);
                 }
             });
-        });
-    </script>
-</body>
+        </script>
+    </body>
 </html>

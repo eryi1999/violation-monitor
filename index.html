@@ -439,10 +439,57 @@
     <script>
         // 配置项
         const CONFIG = {
-            DATA_FILE: 'violation_data.json',  // 数据文件路径
+            DATA_FILE: null,  // 使用内嵌数据，不需要外部文件
             AUTO_REFRESH: false,                // 是否自动刷新（可选）
             REFRESH_INTERVAL: 300000            // 刷新间隔（毫秒），默认 5 分钟
         };
+
+        // 内嵌违价监控数据（2026-03-30 更新）
+        const EMBEDDED_DATA = {
+  "update_time": "2026-03-30 22:30:00",
+  "next_collection_time": "2026-03-31 09:00",
+  "summary": {
+    "taobao": {
+      "violation_count": 11,
+      "trend": "up",
+      "trend_text": "新增 11 个"
+    },
+    "jd": {
+      "violation_count": 2,
+      "trend": "stable",
+      "trend_text": "较昨日持平"
+    },
+    "pdd": {
+      "violation_count": null,
+      "trend": "stable",
+      "trend_text": "暂未采集"
+    },
+    "total_violations": 13,
+    "processed_count": 0
+  },
+  "violations": [
+    {
+      "platform": "taobao",
+      "title": "英诺特甲乙肺三合一检测试剂",
+      "shop_name": "爱康四海大药房",
+      "violation_price": 28.5,
+      "normal_price": 88.0,
+      "product_url": "https://item.taobao.com/item.htm?id=864048013322",
+      "found_time": "2026-03-29 14:23",
+      "status": "pending"
+    },
+    {
+      "platform": "taobao",
+      "title": "英诺特甲乙肺三合一检测试剂",
+      "shop_name": "英诺特旗舰店",
+      "violation_price": 29.9,
+      "normal_price": 88.0,
+      "product_url": "https://item.taobao.com/item.htm?id=864048013322",
+      "found_time": "2026-03-29 15:47",
+      "status": "pending"
+    }
+  ]
+};
 
         // 工具函数：格式化数字
         function formatNumber(num) {
@@ -492,17 +539,11 @@
             return statusMap[status] || status;
         }
 
-        // 核心功能：加载并渲染数据
-        async function loadDashboardData() {
+        // 核心功能：加载并渲染数据（使用内嵌数据）
+        function loadDashboardData() {
             try {
-                // 添加时间戳防止缓存
-                const response = await fetch(CONFIG.DATA_FILE + '?t=' + new Date().getTime());
-                
-                if (!response.ok) {
-                    throw new Error('数据文件加载失败');
-                }
-                
-                const data = await response.json();
+                // 使用内嵌数据，不需要 fetch
+                const data = EMBEDDED_DATA;
                 
                 // 更新统计卡片
                 updateStatsCards(data.summary);

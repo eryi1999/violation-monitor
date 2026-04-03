@@ -430,7 +430,7 @@
             <div class="last-update" id="last-update">
                 最后更新：加载中...
             </div>
-            <button class="download-btn" onclick="downloadReport()">
+            <button class="download-btn" onclick="downloadExcelReport()">
                 📥 下载 Excel 报表
             </button>
         </div>
@@ -450,178 +450,177 @@
             // 内嵌数据（当外部文件加载失败时使用）
             const EMBEDDED_DATA = {
                 "update_time": "2026-04-01 17:10:00",
-                "next_collection_time": "2026-04-02 09:00",
+                "next_collection_time": "2026-04-02 09:00:00",
                 "summary": {
-                                "taobao": {
-                                                "violation_count": 11,
-                                                "trend": "stable",
-                                                "trend_text": "较昨日持平"
-                                },
-                                "jd": {
-                                                "violation_count": 3,
-                                                "trend": "up",
-                                                "trend_text": "新增 1 个"
-                                },
-                                "total_violations": 14,
-                                "processed_count": 0
+                "taobao": {
+                "violation_count": 11,
+                "trend": "stable",
+                "trend_text": "较昨日持平"
+                },
+                "jd": {
+                "violation_count": 3,
+                "trend": "up",
+                "trend_text": "新增 1 个"
+                },
+                "total_violations": 14,
+                "processed_count": 0
                 },
                 "violations": [
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲流乙流肺炎支原体抗原检测盒呼吸道三联试纸居家自测",
-                                                "shop_name": "天猫超市",
-                                                "violation_price": 20.9,
-                                                "normal_price": null,
-                                                "product_url": "https://detail.tmall.com/item.htm?id=777782814501",
-                                                "found_time": "2026-03-30 22:10",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲流乙流支原体三合一试剂盒流感三联咽拭子抗原检测试剂盒",
-                                                "shop_name": "仕达医疗器械专营店",
-                                                "violation_price": 17.5,
-                                                "normal_price": null,
-                                                "product_url": "https://detail.tmall.com/item.htm?id=760837452226",
-                                                "found_time": "2026-03-30 22:10",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲流乙流肺支原体三合一检测试剂盒流感抗原测试纸官方正品",
-                                                "shop_name": "英诺特旗舰店",
-                                                "violation_price": 15.3,
-                                                "normal_price": null,
-                                                "product_url": "https://detail.tmall.com/item.htm?id=805496239702",
-                                                "found_time": "2026-03-30 22:10",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲乙流肺支原体三合一试剂盒流感检测肺炎试剂盒甲流测试纸",
-                                                "shop_name": "仁皿医疗器械专营店",
-                                                "violation_price": 22.7,
-                                                "normal_price": null,
-                                                "product_url": "https://detail.tmall.com/item.htm?id=963811942852",
-                                                "found_time": "2026-03-30 22:10",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲流乙流支原体三合一试剂盒流感肺炎支原体自测试剂盒",
-                                                "shop_name": "九安医疗器械专营店",
-                                                "violation_price": 19.5,
-                                                "normal_price": null,
-                                                "product_url": "https://detail.tmall.com/item.htm?id=889778577423",
-                                                "found_time": "2026-03-30 22:15",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "甲乙流支原体腺病毒合胞病毒流感检测试剂盒试纸三合一英诺特自测",
-                                                "shop_name": "康泰医疗经销站",
-                                                "violation_price": 29,
-                                                "normal_price": null,
-                                                "product_url": "https://item.taobao.com/item.htm?id=1002487491159",
-                                                "found_time": "2026-03-30 22:15",
-                                                "status": "pending",
-                                                "remark": "-"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲乙流肺炎支原体抗原检测试剂盒流感检测家用自测",
-                                                "shop_name": "爱凯医疗器械专营店",
-                                                "violation_price": 28.1,
-                                                "normal_price": null,
-                                                "product_url": "https://detail.tmall.com/item.htm?id=670676328605",
-                                                "found_time": "2026-03-30 22:15",
-                                                "status": "pending",
-                                                "remark": "-"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲乙型流感新型冠抗原检测试纸甲乙流肺炎居家三合一试剂盒",
-                                                "shop_name": "玳珂健康医疗器械企业店",
-                                                "violation_price": 9.1,
-                                                "normal_price": null,
-                                                "product_url": "https://item.taobao.com/item.htm?id=1004207310991",
-                                                "found_time": "2026-03-30 22:25",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特呼吸道三联检测盒肺炎支原体甲流乙流三合一试纸咽拭子",
-                                                "shop_name": "康达九州医疗企业店",
-                                                "violation_price": 29,
-                                                "normal_price": null,
-                                                "product_url": "https://item.taobao.com/item.htm?id=870209689124",
-                                                "found_time": "2026-03-30 22:25",
-                                                "status": "pending",
-                                                "remark": "-"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲流乙流肺炎支原体抗原检测试剂盒三合一呼吸道肺炎自测",
-                                                "shop_name": "云树医疗",
-                                                "violation_price": 26,
-                                                "normal_price": null,
-                                                "product_url": "https://item.taobao.com/item.htm?id=990103563834",
-                                                "found_time": "2026-03-30 22:25",
-                                                "status": "pending",
-                                                "remark": "-"
-                                },
-                                {
-                                                "platform": "taobao",
-                                                "title": "英诺特甲乙流支原体试剂盒流感肺炎三合一抗原咽拭子自测检测试纸",
-                                                "shop_name": "优彩医疗器械专营店",
-                                                "violation_price": 26,
-                                                "normal_price": null,
-                                                "product_url": "https://item.taobao.com/item.htm?id=925758130341",
-                                                "found_time": "2026-03-30 22:25",
-                                                "status": "pending",
-                                                "remark": "-"
-                                },
-                                {
-                                                "platform": "jd",
-                                                "title": "英诺特【可选顺丰】甲流乙流支原体试剂盒三合一 呼吸道三联检测 1 人份（甲乙流 + 支原体）",
-                                                "shop_name": "半洲生物医疗器械专营店",
-                                                "violation_price": 17.5,
-                                                "normal_price": 21.5,
-                                                "product_url": "https://item.jd.com/10108415298699.html",
-                                                "found_time": "2026-03-30 21:25",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                },
-                                {
-                                                "platform": "jd",
-                                                "title": "英诺特甲流乙流感支原体检测试剂盒三合一测试盒甲乙流感试纸【1 人份】",
-                                                "shop_name": "常光医疗保健专营店",
-                                                "violation_price": 28.5,
-                                                "normal_price": null,
-                                                "product_url": "https://item.jd.com/10193758294854.html",
-                                                "found_time": "2026-03-30 21:28",
-                                                "status": "pending",
-                                                "remark": "-"
-                                },
-                                {
-                                                "platform": "jd",
-                                                "title": "甲乙流支原体三合一检测试剂盒",
-                                                "shop_name": "凡几医疗器械专营店",
-                                                "violation_price": 22.0,
-                                                "normal_price": null,
-                                                "product_url": "https://search.jd.com/Search?keyword=英诺特甲乙肺检测试剂",
-                                                "found_time": "2026-04-01 17:10",
-                                                "status": "pending",
-                                                "remark": "低价销售"
-                                }
+                {
+                "platform": "taobao",
+                "title": "英诺特甲流乙流肺炎支原体抗原检测盒呼吸道三联试纸居家自测",
+                "shop_name": "天猫超市",
+                "violation_price": 20.9,
+                "normal_price": null,
+                "product_url": "https://detail.tmall.com/item.htm?id=777782814501",
+                "found_time": "2026-03-30 22:10",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲流乙流支原体三合一试剂盒流感三联咽拭子抗原检测试剂盒",
+                "shop_name": "仕达医疗器械专营店",
+                "violation_price": 17.5,
+                "normal_price": null,
+                "product_url": "https://detail.tmall.com/item.htm?id=760837452226",
+                "found_time": "2026-03-30 22:10",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲流乙流肺支原体三合一检测试剂盒流感抗原测试纸官方正品",
+                "shop_name": "英诺特旗舰店",
+                "violation_price": 15.3,
+                "normal_price": null,
+                "product_url": "https://detail.tmall.com/item.htm?id=805496239702",
+                "found_time": "2026-03-30 22:10",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲乙流肺支原体三合一试剂盒流感检测肺炎试剂盒甲流测试纸",
+                "shop_name": "仁皿医疗器械专营店",
+                "violation_price": 22.7,
+                "normal_price": null,
+                "product_url": "https://detail.tmall.com/item.htm?id=963811942852",
+                "found_time": "2026-03-30 22:10",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲流乙流支原体三合一试剂盒流感肺炎支原体自测试剂盒",
+                "shop_name": "九安医疗器械专营店",
+                "violation_price": 19.5,
+                "normal_price": null,
+                "product_url": "https://detail.tmall.com/item.htm?id=889778577423",
+                "found_time": "2026-03-30 22:15",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "甲乙流支原体腺病毒合胞病毒流感检测试剂盒试纸三合一英诺特自测",
+                "shop_name": "康泰医疗经销站",
+                "violation_price": 29,
+                "normal_price": null,
+                "product_url": "https://item.taobao.com/item.htm?id=1002487491159",
+                "found_time": "2026-03-30 22:15",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲乙流肺炎支原体抗原检测试剂盒流感检测家用自测",
+                "shop_name": "爱凯医疗器械专营店",
+                "violation_price": 28.1,
+                "normal_price": null,
+                "product_url": "https://detail.tmall.com/item.htm?id=670676328605",
+                "found_time": "2026-03-30 22:15",
+                "status": "pending",
+                "remark": "券后价，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲乙型流感新型冠抗原检测试纸甲乙流肺炎居家三合一试剂盒",
+                "shop_name": "玳珂健康医疗器械企业店",
+                "violation_price": 9.1,
+                "normal_price": null,
+                "product_url": "https://item.taobao.com/item.htm?id=1004207310991",
+                "found_time": "2026-03-30 22:25",
+                "status": "pending",
+                "remark": "标题含'新冠',需核实是否包含甲乙肺三合一规格"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特呼吸道三联检测盒肺炎支原体甲流乙流三合一试纸咽拭子",
+                "shop_name": "康达九州医疗企业店",
+                "violation_price": 29,
+                "normal_price": null,
+                "product_url": "https://item.taobao.com/item.htm?id=870209689124",
+                "found_time": "2026-03-30 22:25",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲流乙流肺炎支原体抗原检测试剂盒三合一呼吸道肺炎自测",
+                "shop_name": "云树医疗",
+                "violation_price": 26,
+                "normal_price": null,
+                "product_url": "https://item.taobao.com/item.htm?id=990103563834",
+                "found_time": "2026-03-30 22:25",
+                "status": "pending",
+                "remark": "券后价，待详情页核实"
+                },
+                {
+                "platform": "taobao",
+                "title": "英诺特甲乙流支原体试剂盒流感肺炎三合一抗原咽拭子自测检测试纸",
+                "shop_name": "优彩医疗器械专营店",
+                "violation_price": 26,
+                "normal_price": null,
+                "product_url": "https://item.taobao.com/item.htm?id=925758130341",
+                "found_time": "2026-03-30 22:25",
+                "status": "pending",
+                "remark": "列表页价格，待详情页核实"
+                },
+                {
+                "platform": "jd",
+                "title": "英诺特【可选顺丰】甲流乙流支原体试剂盒三合一 呼吸道三联检测 1 人份（甲乙流 + 支原体）",
+                "shop_name": "半洲生物医疗器械专营店",
+                "violation_price": 17.5,
+                "normal_price": 21.5,
+                "product_url": "https://item.jd.com/10108415298699.html",
+                "found_time": "2026-03-30 21:25",
+                "status": "pending",
+                "remark": "用户分享的链接，非自营店铺，到手价¥17.5 元 (<30 元),确认为违价商品"
+                },
+                {
+                "platform": "jd",
+                "title": "英诺特甲流乙流感支原体检测试剂盒三合一测试盒甲乙流感试纸【1 人份】",
+                "shop_name": "常光医疗保健专营店",
+                "violation_price": 28.5,
+                "normal_price": null,
+                "product_url": "https://item.jd.com/10193758294854.html",
+                "found_time": "2026-03-30 21:28",
+                "status": "pending",
+                "remark": "用户分享链接采集，非自营店铺，价格¥28.50 元 (<30 元),确认为违价商品"
+                },
+                {
+                "platform": "jd",
+                "title": "甲乙流支原体三合一检测试剂盒",
+                "shop_name": "凡几医疗器械专营店",
+                "violation_price": 22.0,
+                "normal_price": null,
+                "product_url": "https://search.jd.com/Search?keyword=英诺特甲乙肺检测试剂",
+                "found_time": "2026-04-01 17:10",
+                "status": "pending",
+                "remark": "2026-04-01 实时采集发现，价格¥22 元包邮，远低于 30 元标准"
+                }
                 ]
-}
             };
 
             // 工具函数：格式化数字
@@ -680,20 +679,9 @@
             // 核心功能：加载并渲染数据
             async function loadDashboardData() {
                 try {
-                    let data;
-                    
-                    // 尝试加载外部数据文件
-                    try {
-                        const response = await fetch(CONFIG.DATA_FILE);
-                        if (!response.ok) {
-                            throw new Error('HTTP error! status: ' + response.status);
-                        }
-                        data = await response.json();
-                        console.log('✅ 外部数据加载成功:', data);
-                    } catch (fetchError) {
-                        console.warn('⚠️ 外部数据加载失败，使用内嵌数据:', fetchError);
-                        data = EMBEDDED_DATA;
-                    }
+                    // 直接使用内嵌数据，避免外部文件加载失败和 CORS 问题
+                    const data = EMBEDDED_DATA;
+                    console.log('✅ 使用内嵌数据加载:', data.summary);
                     
                     // 更新统计卡片
                     updateStatsCards(data.summary);
